@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  番茄钟 —— 渲染进程页面（index.html）
+  深色极简科技风：工作模式橘红 / 休息模式薄荷绿
+  ============================================================
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <!-- ★ Windows 桌面应用：仅允许加载本地资源，禁止外联，提升安全性 -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;" />
+  <title>番茄钟</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-mode="work">
+
+  <!-- ===== 顶部：标题 + 置顶 / 隐藏按钮 ===== -->
+  <header class="topbar">
+    <span class="title">番茄钟</span>
+    <div class="top-actions">
+      <button id="pinBtn" class="icon-btn" title="窗口置顶">置顶</button>
+      <button id="hideBtn" class="icon-btn" title="隐藏到系统托盘">隐藏</button>
+    </div>
+  </header>
+
+  <!-- ===== 模式指示：工作 / 休息 ===== -->
+  <div class="mode">
+    <span class="dot" id="modeDot"></span>
+    <span id="modeText">工作 · 空闲</span>
+  </div>
+
+  <!-- ===== 倒计时大数字 ===== -->
+  <div id="countdown" class="countdown">25:00</div>
+
+  <!-- ===== 控制按钮：开始 / 暂停 / 重置 ===== -->
+  <div class="controls">
+    <button id="startBtn" class="btn primary">开始</button>
+    <button id="pauseBtn" class="btn">暂停</button>
+    <button id="resetBtn" class="btn">重置</button>
+  </div>
+
+  <!-- ===== 设置：时长输入（分钟），修改后立即生效并保存 ===== -->
+  <div class="settings">
+    <div class="setting-item">
+      <label for="workInput">工作时长</label>
+      <input id="workInput" type="number" min="1" max="120" step="1" value="25" />
+      <span class="unit">分钟</span>
+    </div>
+    <div class="setting-item">
+      <label for="restInput">休息时长</label>
+      <input id="restInput" type="number" min="1" max="120" step="1" value="5" />
+      <span class="unit">分钟</span>
+    </div>
+  </div>
+
+  <!-- ===== 底部：完成番茄统计 ===== -->
+  <footer class="stats">
+    <span class="stats-label">已完成番茄</span>
+    <span id="count" class="stats-count">0</span>
+  </footer>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

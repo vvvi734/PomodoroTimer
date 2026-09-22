@@ -1,0 +1,161 @@
+/* ============================================================
+ *  style.css —— 番茄钟 深色极简科技风
+ *  工作模式：橘红   #ff6b35
+ *  休息模式：薄荷绿 #2dd4a7
+ *  禁止花哨装饰：无渐变堆叠、无大阴影、无复杂动画
+ * ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d0f14;        /* 窗口底色（深灰黑） */
+  --panel: #151922;     /* 内嵌面板 */
+  --border: #232936;    /* 分隔线/描边 */
+  --text: #e8ecf4;      /* 主文字 */
+  --muted: #7d8597;     /* 次要文字 */
+  --work: #ff6b35;      /* 工作：橘红 */
+  --rest: #2dd4a7;      /* 休息：薄荷绿 */
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  user-select: none;            /* 桌面小工具：禁止选中文字 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 22px 16px;
+  --accent: var(--work);        /* 默认（工作模式）主题色 */
+}
+body[data-mode="rest"] { --accent: var(--rest); }   /* 休息模式切换配色 */
+
+/* ===== 顶部栏 ===== */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+.top-actions { display: flex; gap: 8px; }
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--muted); }
+.icon-btn.active { color: var(--accent); border-color: var(--accent); }
+
+/* ===== 模式指示 ===== */
+.mode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 2px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+#modeText { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+
+/* ===== 倒计时大数字 ===== */
+.countdown {
+  font-family: "Consolas", "Cascadia Mono", "Courier New", monospace;
+  font-size: 82px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--accent);
+  margin: 10px 0 6px;
+  letter-spacing: 4px;
+  font-variant-numeric: tabular-nums;   /* 数字等宽，倒计时不跳动 */
+}
+
+/* ===== 控制按钮 ===== */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 16px 0 20px;
+}
+.btn {
+  flex: 1;
+  max-width: 100px;
+  padding: 10px 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn.primary { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ===== 设置区 ===== */
+.settings {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.setting-item label {
+  flex: 0 0 64px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.setting-item input {
+  width: 70px;
+  padding: 5px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+}
+.setting-item input:focus { border-color: var(--accent); }
+/* 去掉 number 输入框的上下箭头，更简洁 */
+.setting-item input::-webkit-outer-spin-button,
+.setting-item input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.setting-item .unit { font-size: 12px; color: var(--muted); }
+
+/* ===== 底部统计 ===== */
+.stats {
+  margin-top: auto;             /* 推到窗口底部 */
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.stats-label { font-size: 13px; color: var(--muted); }
+.stats-count {
+  font-family: "Consolas", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
