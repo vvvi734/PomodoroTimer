@@ -9,6 +9,8 @@
     "start": "electron .",
     "smoke": "electron . --smoke-test",
     "pack": "electron-builder --win portable",
+    "pack:dir": "electron-builder --win dir",
+    "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/create-desktop-shortcut.ps1",
     "dist": "electron-builder --win nsis"
   },
   "devDependencies": {

@@ -50,6 +50,8 @@ pomodoro-timer/
 ├── index.html          # 渲染进程页面
 ├── renderer.js         # 渲染进程逻辑：界面渲染、主题/语言、提示音、快捷键
 ├── style.css           # 深色 / 亮色双主题样式
+├── scripts/
+│   └── create-desktop-shortcut.ps1   # 生成/更新桌面快捷方式
 ├── assets/icon.png     # 应用图标（托盘/窗口图标）
 └── build/icon.ico      # Windows 打包用图标
 ```
@@ -72,12 +74,21 @@ npm run smoke
 ```
 
 ### 4. 打包
+- 目录版（可直接运行，无需安装）：`npm run pack:dir`
 - 便携版（免安装单文件 exe）：`npm run pack`
 - 安装版（NSIS 安装程序 exe）：`npm run dist`
 
 产物输出到 `release/` 目录。
 
 > 首次打包会下载 electron-builder 所需的 Windows 打包工具，需要联网，耗时较长属正常。
+
+> **关于杀软误报**：`npm run pack` 生成的便携版 exe 是**未签名 + 自解压**封装（运行时解压到临时目录再启动），火绒、360 等杀软常按“自解压释放并执行”的启发式规则误报。程序自身只依赖 `electron` / `path` / `fs`，无联网、无子进程、无动态执行代码，CSP 仅允许本地资源；桌面快捷方式指向的是 `release\win-unpacked\番茄钟.exe`（目录版），不受该误报影响。不需要单文件分发时，建议直接用 `npm run pack:dir`。
+
+### 5. 桌面快捷方式
+```powershell
+npm run shortcut
+```
+在桌面生成 / 更新「番茄钟」快捷方式，指向 `release\win-unpacked\番茄钟.exe`（启动最快）；若该目录不存在，会自动回退到 `release` 下最新的便携版 exe。快捷方式已存在时直接覆盖。
 
 ## 配置持久化位置
 `C:\Users\<用户名>\AppData\Roaming\pomodoro-timer\config.json`
