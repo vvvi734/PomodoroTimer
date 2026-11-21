@@ -1,19 +1,42 @@
 /* ============================================================
- *  style.css —— 番茄钟 深色极简科技风
- *  工作模式：橘红   #ff6b35
- *  休息模式：薄荷绿 #2dd4a7
+ *  style.css —— 番茄钟（深色 / 亮色 双主题）
+ * ------------------------------------------------------------
+ *  工作：橘红   休息：薄荷绿   长休息：蓝
+ *  主题通过 <html data-theme="dark|light"> 切换：
+ *    · 深色为默认（无 data-theme 时的兜底）
+ *    · 亮色由 [data-theme="light"] 覆盖 CSS 变量
  *  禁止花哨装饰：无渐变堆叠、无大阴影、无复杂动画
  * ============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ---------------- 深色（默认） ---------------- */
 :root {
-  --bg: #0d0f14;        /* 窗口底色（深灰黑） */
+  color-scheme: dark;
+  --bg: #0d0f14;        /* 窗口底色 */
   --panel: #151922;     /* 内嵌面板 */
   --border: #232936;    /* 分隔线/描边 */
   --text: #e8ecf4;      /* 主文字 */
   --muted: #7d8597;     /* 次要文字 */
+  --chip: #1a1f2b;      /* 小按钮底色 */
   --work: #ff6b35;      /* 工作：橘红 */
   --rest: #2dd4a7;      /* 休息：薄荷绿 */
+  --long: #6ea8ff;      /* 长休息：蓝 */
+  --shadow: none;
+}
+
+/* ---------------- 亮色 ---------------- */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f6fa;
+  --panel: #ffffff;
+  --border: #e0e5ee;
+  --text: #1b2130;
+  --muted: #6a7385;
+  --chip: #eef2f8;
+  --work: #e0470f;      /* 亮底上加深，保证对比度 */
+  --rest: #0f9d7a;
+  --long: #2563eb;
+  --shadow: 0 1px 3px rgba(20, 30, 60, .07);
 }
 
 html, body { height: 100%; }
@@ -21,38 +44,46 @@ html, body { height: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   user-select: none;            /* 桌面小工具：禁止选中文字 */
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 18px 22px 16px;
+  padding: 14px 20px 12px;
   --accent: var(--work);        /* 默认（工作模式）主题色 */
+  transition: background-color .18s ease, color .18s ease;
 }
-body[data-mode="rest"] { --accent: var(--rest); }   /* 休息模式切换配色 */
+body[data-mode="rest"] { --accent: var(--rest); }        /* 休息模式配色 */
+body[data-mode="longRest"] { --accent: var(--long); }    /* 长休息配色 */
 
 /* ===== 顶部栏 ===== */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 .title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
 }
-.top-actions { display: flex; gap: 8px; }
+.top-actions { display: flex; gap: 6px; }
 .icon-btn {
-  background: transparent;
+  min-width: 34px;
+  background: var(--chip);
   border: 1px solid var(--border);
   color: var(--muted);
-  font-size: 12px;
-  padding: 3px 10px;
-  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 4px 7px;
+  border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s, background-color .15s;
 }
-.icon-btn:hover { color: var(--text); border-color: var(--muted); }
+.icon-btn:hover { color: var(--text); border-color: var(--accent); }
 .icon-btn.active { color: var(--accent); border-color: var(--accent); }
 
 /* ===== 模式指示 ===== */
@@ -60,46 +91,65 @@ body[data-mode="rest"] { --accent: var(--rest); }   /* 休息模式切换配色 
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 14px 0 2px;
+  margin: 16px 0 4px;
 }
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--accent);
+  flex: 0 0 auto;
 }
-#modeText { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+#modeText { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
 
 /* ===== 倒计时大数字 ===== */
 .countdown {
   font-family: "Consolas", "Cascadia Mono", "Courier New", monospace;
-  font-size: 82px;
+  font-size: 68px;
   font-weight: 700;
+  line-height: 1.15;
   text-align: center;
   color: var(--accent);
-  margin: 10px 0 6px;
-  letter-spacing: 4px;
+  margin: 6px 0 4px;
+  letter-spacing: 2px;
   font-variant-numeric: tabular-nums;   /* 数字等宽，倒计时不跳动 */
+  transition: color .18s ease;
+}
+
+/* ===== 阶段进度条 ===== */
+.progress {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width .25s linear, background-color .18s ease;
 }
 
 /* ===== 控制按钮 ===== */
 .controls {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin: 16px 0 20px;
+  gap: 8px;
+  margin: 18px 0 14px;
 }
 .btn {
   flex: 1;
-  max-width: 100px;
-  padding: 10px 0;
+  padding: 9px 0;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text);
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
-  transition: border-color .15s, color .15s;
+  box-shadow: var(--shadow);
+  transition: border-color .15s, color .15s, background-color .15s;
 }
 .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .btn.primary { border-color: var(--accent); color: var(--accent); }
@@ -110,52 +160,100 @@ body[data-mode="rest"] { --accent: var(--rest); }   /* 休息模式切换配色 
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 11px 13px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  box-shadow: var(--shadow);
+  transition: background-color .18s ease, border-color .18s ease;
+}
+
+/* 四段时长：2×2 网格 */
+.setting-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
 }
 .setting-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
+  min-width: 0;
 }
 .setting-item label {
-  flex: 0 0 64px;
-  font-size: 13px;
+  flex: 0 0 auto;
+  font-size: 11.5px;
   color: var(--muted);
+  white-space: nowrap;
 }
 .setting-item input {
-  width: 70px;
-  padding: 5px 8px;
+  width: 42px;
+  flex: 0 0 auto;
+  padding: 4px 6px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
   outline: none;
+  transition: border-color .15s, background-color .18s ease, color .18s ease;
 }
 .setting-item input:focus { border-color: var(--accent); }
 /* 去掉 number 输入框的上下箭头，更简洁 */
 .setting-item input::-webkit-outer-spin-button,
 .setting-item input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.setting-item .unit { font-size: 12px; color: var(--muted); }
+.setting-item .unit {
+  flex: 0 0 auto;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
-/* ===== 底部统计 ===== */
-.stats {
+/* 行为开关：自动隐藏 / 提示音 / 自动继续 */
+.toggles { display: flex; gap: 8px; }
+.toggle {
+  flex: 1;
+  padding: 6px 4px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s, background-color .15s;
+}
+.toggle:hover { color: var(--text); border-color: var(--accent); }
+.toggle.on { color: var(--accent); border-color: var(--accent); }
+.toggle:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+/* ===== 底部：长休周期圆点 + 统计 ===== */
+.footer {
   margin-top: auto;             /* 推到窗口底部 */
   display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 8px;
-  padding-top: 14px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
 }
-.stats-label { font-size: 13px; color: var(--muted); }
-.stats-count {
-  font-family: "Consolas", monospace;
-  font-size: 22px;
+.dots { display: flex; align-items: center; gap: 6px; }
+.cycle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+.cycle-dot.on { background: var(--accent); border-color: var(--accent); }
+
+.stats { display: flex; gap: 12px; font-size: 11px; color: var(--muted); }
+.stats b {
+  font-family: "Consolas", "Cascadia Mono", monospace;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent);
+  margin-left: 2px;
 }

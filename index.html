@@ -2,10 +2,11 @@
 <!--
   ============================================================
   番茄钟 —— 渲染进程页面（index.html）
-  深色极简科技风：工作模式橘红 / 休息模式薄荷绿
+  深色 / 亮色双主题：工作橘红、休息薄荷绿、长休息蓝
+  界面语言：中文 / English（默认跟随系统）
   ============================================================
 -->
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <!-- ★ Windows 桌面应用：仅允许加载本地资源，禁止外联，提升安全性 -->
@@ -16,51 +17,76 @@
 </head>
 <body data-mode="work">
 
-  <!-- ===== 顶部：标题 + 置顶 / 隐藏按钮 ===== -->
+  <!-- ===== 顶部：标题 + 主题 / 语言 / 置顶 / 隐藏 ===== -->
   <header class="topbar">
-    <span class="title">番茄钟</span>
+    <span class="title" data-i18n="appTitle">番茄钟</span>
     <div class="top-actions">
-      <button id="pinBtn" class="icon-btn" title="窗口置顶">置顶</button>
-      <button id="hideBtn" class="icon-btn" title="隐藏到系统托盘">隐藏</button>
+      <button id="themeBtn" class="icon-btn" data-i18n="themeSystem" data-i18n-title="themeTitle">自动</button>
+      <button id="langBtn" class="icon-btn" data-i18n-title="langTitle">EN</button>
+      <button id="pinBtn" class="icon-btn" data-i18n="btnPin" data-i18n-title="pinTitle">置顶</button>
+      <button id="hideBtn" class="icon-btn" data-i18n="btnHide" data-i18n-title="hideTitle">隐藏</button>
     </div>
   </header>
 
-  <!-- ===== 模式指示：工作 / 休息 ===== -->
+  <!-- ===== 模式指示：工作 / 休息 / 长休息 + 状态 ===== -->
   <div class="mode">
     <span class="dot" id="modeDot"></span>
     <span id="modeText">工作 · 空闲</span>
   </div>
 
-  <!-- ===== 倒计时大数字 ===== -->
+  <!-- ===== 倒计时大数字 + 阶段进度 ===== -->
   <div id="countdown" class="countdown">25:00</div>
+  <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
 
-  <!-- ===== 控制按钮：开始 / 暂停 / 重置 ===== -->
+  <!-- ===== 控制按钮：开始/继续 / 暂停 / 跳过 / 重置 ===== -->
   <div class="controls">
-    <button id="startBtn" class="btn primary">开始</button>
-    <button id="pauseBtn" class="btn">暂停</button>
-    <button id="resetBtn" class="btn">重置</button>
+    <button id="startBtn" class="btn primary" data-i18n="btnStart">开始</button>
+    <button id="pauseBtn" class="btn" data-i18n="btnPause">暂停</button>
+    <button id="skipBtn" class="btn" data-i18n="btnSkip">跳过</button>
+    <button id="resetBtn" class="btn" data-i18n="btnReset">重置</button>
   </div>
 
-  <!-- ===== 设置：时长输入（分钟），修改后立即生效并保存 ===== -->
+  <!-- ===== 设置：四段时长 + 三个行为开关 ===== -->
   <div class="settings">
-    <div class="setting-item">
-      <label for="workInput">工作时长</label>
-      <input id="workInput" type="number" min="1" max="120" step="1" value="25" />
-      <span class="unit">分钟</span>
+    <div class="setting-grid">
+      <div class="setting-item">
+        <label for="workInput" data-i18n="labelWork">工作时长</label>
+        <input id="workInput" type="number" min="1" max="120" step="1" value="25" />
+        <span class="unit" data-i18n="unitMinute">分钟</span>
+      </div>
+      <div class="setting-item">
+        <label for="restInput" data-i18n="labelRest">休息时长</label>
+        <input id="restInput" type="number" min="1" max="120" step="1" value="5" />
+        <span class="unit" data-i18n="unitMinute">分钟</span>
+      </div>
+      <div class="setting-item">
+        <label for="longBreakInput" data-i18n="labelLongRest">长休时长</label>
+        <input id="longBreakInput" type="number" min="1" max="60" step="1" value="15" />
+        <span class="unit" data-i18n="unitMinute">分钟</span>
+      </div>
+      <div class="setting-item">
+        <label for="intervalInput" data-i18n="labelInterval">长休间隔</label>
+        <input id="intervalInput" type="number" min="2" max="8" step="1" value="4" />
+        <span class="unit" data-i18n="unitPomodoro">个番茄</span>
+      </div>
     </div>
-    <div class="setting-item">
-      <label for="restInput">休息时长</label>
-      <input id="restInput" type="number" min="1" max="120" step="1" value="5" />
-      <span class="unit">分钟</span>
+    <div class="toggles">
+      <button id="autoHideBtn" class="toggle" data-i18n="autoHide" data-i18n-title="autoHideTitle">自动隐藏</button>
+      <button id="soundBtn" class="toggle" data-i18n="soundOn" data-i18n-title="soundTitle">提示音</button>
+      <button id="autoNextBtn" class="toggle" data-i18n="autoNext" data-i18n-title="autoNextTitle">自动继续</button>
     </div>
   </div>
 
-  <!-- ===== 底部：完成番茄统计 ===== -->
-  <footer class="stats">
-    <span class="stats-label">已完成番茄</span>
-    <span id="count" class="stats-count">0</span>
+  <!-- ===== 底部：长休周期圆点 + 今日 / 累计统计 ===== -->
+  <footer class="footer">
+    <div class="dots" id="dots"></div>
+    <div class="stats">
+      <span><span data-i18n="statsToday">今日</span> <b id="statToday">0</b></span>
+      <span><span data-i18n="statsTotal">累计</span> <b id="statTotal">0</b></span>
+    </div>
   </footer>
 
+  <script src="i18n.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>
